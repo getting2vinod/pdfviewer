@@ -1,0 +1,12 @@
+---
+version: "2.1"
+services:
+  pdfviewer:
+    image: pdfviewerimage:latest
+    container_name: pdfviewer
+    volumes:
+      - ./:/app
+    ports:
+      - 80:5000
+    command: python app.py
+    restart: unless-stopped

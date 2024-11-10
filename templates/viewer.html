@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ pdf }}</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        const soundFiles = [
+  '{{route}}/static/audio/One.mp3',
+  '{{route}}/static/audio/Two.mp3',
+  '{{route}}/static/audio/Three.mp3',
+  '{{route}}/static/audio/Four.mp3',
+  '{{route}}/static/audio/Five.mp3',
+  '{{route}}/static/audio/Six.mp3',
+  '{{route}}/static/audio/Seven.mp3',
+  '{{route}}/static/audio/Eight.mp3',
+  '{{route}}/static/audio/Nine.mp3',
+  '{{route}}/static/audio/Ten.mp3',
+  '{{route}}/static/audio/Eleven.mp3'
+  
+  // Add more sound file paths here
+];
+
+const audioElements = soundFiles.map(soundFile => {
+  const audio = new Audio(soundFile);
+  audio.preload = 'auto'; // Preload the audio
+  return audio;
+});
+
+function getRandomSound() {
+  const randomIndex = Math.floor(Math.random() * soundFiles.length);
+  return audioElements[randomIndex];
+}
+
+function playRandomSound() {
+  const randomSound = getRandomSound();
+  randomSound.currentTime = 0; // Reset audio to start
+  randomSound.play();
+  document.getElementById("content").style.display = "none";
+}
+
+
+let inactiveTimeout;
+
+function resetTimer() {
+  clearTimeout(inactiveTimeout);
+  document.getElementById("content").style.display = "block";
+  inactiveTimeout = setTimeout(playRandomSound, 600000); // 60000 milliseconds = 1 minute
+}
+
+document.addEventListener('mousemove', resetTimer);
+
+// Initialize the timer on page load
+resetTimer();
+</script>
+</head>
+<body class="d-block p-2 bg-dark text-white">
+    <span class="d-block p-2 bg-dark text-white">
+    <div class="container float-left" id="content">
+        <h1 class="mt-4">{{ pdf }} </h1>
+        <h2 class="mt-4"><a style="text-align: right" href="{{route}}/">Home</a></h2>
+        <div class="row">
+            <table style="border: 2px; border-color: black; width: 100%;">
+                {% if ispdf == True %}
+                    {% for img in img_files %}
+                        <tr width="100%"><td>
+                            <img src="{{route}}/static/jpegs/{{img}}"/>
+                        </td></tr>
+                    {% endfor %}
+                {% else %}
+                  {% for img in img_files %}
+                    <tr width="100%"><td>
+                        <img src="{{route}}/{{img}}"/>
+                    </td></tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
+    </div>
+    </span>
+    
+    <!-- Add Bootstrap JS and Popper.js links (required for Bootstrap components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

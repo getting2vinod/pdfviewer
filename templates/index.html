@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Upload and Display</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">PDF Upload and Display</h1>
+        
+        <form action="{{route}}/upload" method="POST" enctype="multipart/form-data" class="mt-4">
+            <div class="form-group">
+                <label for="pdf">Select a PDF file:</label>
+                <input type="file" class="form-control-file" id="pdf" name="pdf">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+        
+        <h2 class="mt-4">Uploaded PDFs:</h2>
+        <div class="row">
+            {% for pdf in pdf_files %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">{{ pdf }}</h5>
+                            <form action="{{route}}/delete/{{ pdf }}" method="post" onsubmit="return confirm('Are you sure?');"> 
+                                <button type="submit" class="btn btn-sm btn-danger" >X</button>
+                            </form>
+                        </div>
+                        <a href="{{route}}{{ url_for('viewer', pdf=pdf) }}" class="btn btn-primary mt-2">View PDF</a>                        
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Add Bootstrap JS and Popper.js links (required for Bootstrap components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
