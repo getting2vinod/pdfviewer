@@ -1,12 +1,23 @@
----
-version: "2.1"
 services:
   pdfviewer:
-    image: pdfviewerimage:latest
+    image: python:pdf
     container_name: pdfviewer
-    volumes:
-      - ./:/app
+    hostname: pdf.myapps.localhost  
+    networks:
+      - net
     ports:
-      - 80:5000
-    command: python app.py
+      - "4000:4000"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - ./static:/app/static
+    environment:
+      - LOGIN_EXPIRY=30 #days
+      - APP_ROUTE=pdf #use only when routed through nginx. 
+      - CONFIG_ENV=auth-stage #change to prod   
+    
     restart: unless-stopped
+networks:
+  net:
+    driver: bridge    
+    external: true
+    

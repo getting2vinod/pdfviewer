@@ -6,8 +6,18 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="mt-4">PDF Upload and Display</h1>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <h4 class="mt-4">PDF Upload and Display</h4>
+          </div>              
+          <ul class="nav navbar-nav navbar-right">
+            <li>Hello {{username.upper()}}</a></li>
+            <li><a href="{{route}}/logout">Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+    <div class="container">       
         
         <form action="{{route}}/upload" method="POST" enctype="multipart/form-data" class="mt-4">
             <div class="form-group">

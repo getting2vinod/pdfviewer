@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for
 import os
 from waitress import serve
 from pdf2image import convert_from_path
+from authapi import check_login, init, auth, username
+import logging
 
 route_prefix = os.getenv('APP_ROUTE') or ""
 
@@ -11,7 +13,9 @@ if(route_prefix != ""):
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/pdfs'
 app.config['JPG_FOLDER'] = 'static/jpegs'
+app.register_blueprint(auth)
 
+init(app)
 
 def pdf_to_jpeg(pdf_path, output_folder):
     # Convert PDF pages to images
@@ -32,7 +36,7 @@ def last_5chars(x):
 @app.route('/')
 def index():
     pdf_files = os.listdir(app.config['UPLOAD_FOLDER'])
-    return render_template('index.html', pdf_files=pdf_files,route=route_prefix)
+    return render_template('index.html', pdf_files=pdf_files,route=route_prefix,username=username())
 
 
 @app.route('/viewer')
@@ -90,5 +94,5 @@ def delete(pdf):
 
 
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=5000)
+    serve(app, host='0.0.0.0', port=4000)
     #app.run(debug=True)
