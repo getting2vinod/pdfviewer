@@ -104,15 +104,16 @@ def check_login():
                         session["username"]=rp["username"]                        
                         return None
                     else:
-                        
-                        session["_source"] = urllib.parse.quote((request.url + route_prefix))       
+                        _url = request.url.replace('http://', 'https://', 1)
+                        session["_source"] = urllib.parse.quote((_url + route_prefix))       
                         signonUrl = url_e +  "/signon?callback=" + urllib.parse.quote(url_app + "/callback")
                         #send callback url and _source
                         logging.debug("Validation failed. Redirecting to : %s", signonUrl)
                         return redirect(signonUrl)
                 
             else: # no token found to sign in
-                session["_source"] = urllib.parse.quote((request.url + route_prefix))       
+                _url = request.url.replace('http://', 'https://',1)
+                session["_source"] = urllib.parse.quote((_url + route_prefix))       
                 signonUrl =url_e +  "/signon?callback=" + urllib.parse.quote(url_app + "/callback")
                 #send callback url and _source
                 logging.debug("No token found. Redirecting to : %s, source : %s.", signonUrl, session.get("_source"))

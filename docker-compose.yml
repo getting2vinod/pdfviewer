@@ -10,6 +10,8 @@ services:
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - ./static:/app/static
+      - ./app.py:/app/app.py
+      - ./authapi.py:/app/authapi.py
     environment:
       - LOGIN_EXPIRY=30 #days
       - APP_ROUTE=pdf #use only when routed through nginx. 
