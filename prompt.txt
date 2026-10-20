@@ -1,0 +1,44 @@
+---
+
+### File 2: `PROJECT_PROMPT.md`
+
+Save this file as `PROJECT_PROMPT.md` in your project root. If you ever need to recreate this project or hand it off to an LLM assistant in the future, you can paste the prompt below verbatim:
+
+```markdown
+# Recreation Prompt for AI Assistants
+
+Copy and paste the prompt below into an LLM assistant (e.g., Gemini, ChatGPT) to reproduce or expand this project from scratch:
+
+```text
+You are a web developer. Act as a senior full-stack engineer and build a production-ready web application with the following specifications:
+
+1. Stack & Infrastructure:
+   - Backend: Python 3.11+ using FastAPI with Jinja2 templating.
+   - Package Manager: `uv` (`pyproject.toml`).
+   - Containerization: Multi-stage Dockerfile based on `python:3.11-slim` with `poppler-utils` installed.
+   - Subpath Reverse Proxying: The app must be accessible under a subpath (e.g., [https://sasthashub.duckdns.org/pdf](https://sasthashub.duckdns.org/pdf)). The path prefix is specified via an environment variable `ROUTE_PATH` (defaulting to `/pdf`). All GET/POST URLs, static file mounts, and Jinja2 templates must use `ROUTE_PATH`.
+   - Templating Compatibility: In Jinja2 `TemplateResponse`, explicitly pass `request=request, name="<template>.html", context={...}` to support current FastAPI/Starlette signatures.
+
+2. Functional Requirements:
+   - File Uploads: Accepts PDF and JPG/JPEG files.
+   - PDF Conversion: Uploaded PDFs are extracted into a folder named after the PDF stem. Pages are saved as JPEG images with `_page_x.jpg` suffixes using `pdf2image`. Catch encrypted/password-protected PDFs gracefully.
+   - Main Dashboard (`index.html`):
+     - Displays cards in Bootstrap 5 sorted by upload/modification date in descending order.
+     - Cards use rounded corners (`rounded-4`).
+     - Display full item name with breaking for long titles.
+     - PDF folders show a red PDF icon (`bi-file-earmark-pdf-fill`), standalone images show a blue image icon (`bi-file-earmark-image-fill`).
+     - Prominent "View" button for navigation.
+     - Discreet/small trash button to prevent accidental deletion, with JavaScript confirmation.
+   - Document Preview (`preview.html`):
+     - Fixed header displaying document name and a "Back" button returning to the home page.
+     - Vertically scrollable page area.
+     - Saves scroll position in `localStorage` keyed by item title and automatically restores it on return.
+     - Blankout overlay: Automatically hides page content behind a black overlay after 10 minutes of inactivity. Resumes on mouse move, keypress, touch, or scroll events (using class toggles to avoid Bootstrap `!important` conflict).
+
+3. Deliverables Required:
+   - Full Python backend (`app/main.py`)
+   - HTML templates (`base.html`, `index.html`, `preview.html`)
+   - `pyproject.toml` configuration
+   - Multi-stage `Dockerfile` and `docker-compose.yml`
+   - `.vscode/launch.json` setup for local uvicorn debugging
+   - Bash setup script (`setup.sh`) to instantiate the complete project

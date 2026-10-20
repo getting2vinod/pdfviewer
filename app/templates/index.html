@@ -32,7 +32,6 @@
     <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
         {% for item in items %}
         <div class="col">
-            <!-- Added rounded-4 for smooth rounded card corners -->
             <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
                 <div class="card-body text-center d-flex flex-column align-items-center justify-content-between">
                     <div class="mb-3">
@@ -54,7 +53,6 @@
                             {% endif %}
                         </span>
                     </div>
-                    <!-- Action buttons: View button is prominent, Delete is small and muted to prevent accidents -->
                     <div class="d-flex w-100 align-items-center gap-2 mt-2">
                         <a href="{{ ROUTE_PATH }}/preview/{{ item.name }}" class="btn btn-outline-primary btn-sm flex-fill rounded-pill">
                             <i class="bi bi-eye"></i> View

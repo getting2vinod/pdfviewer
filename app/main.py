@@ -1,4 +1,5 @@
 import os
+import re
 import shutil
 from pathlib import Path
 from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException
@@ -6,15 +7,30 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pdf2image import convert_from_path
+from pdf2image.exceptions import PDFPageCountError
 
-# Read environment variables
-ROUTE_PATH = os.getenv("ROUTE_PATH", "/pdf").rstrip("/")
+# Middleware to clean double slashes
+class RemoveDoubleSlashesMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            scope["path"] = re.sub(r"/{2,}", "/", scope["path"])
+        await self.app(scope, receive, send)
+
+raw_route = os.getenv("ROUTE_PATH", "").strip("/")
+ROUTE_PATH = f"/{raw_route}" if raw_route else ""
+
 DATA_DIR = Path(os.getenv("DATA_DIR", "/app/data"))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(root_path=ROUTE_PATH)
+# Do NOT pass root_path here since Nginx already strips the /pdf prefix
+app = FastAPI()
 
-# Mount static files and data storage
+app.add_middleware(RemoveDoubleSlashesMiddleware)
+
+# Mount static files and data storage directly at root
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.mount("/media", StaticFiles(directory=DATA_DIR), name="media")
 
@@ -34,14 +50,14 @@ async def index(request: Request):
                     "name": entry.name,
                     "type": "folder",
                     "page_count": page_count,
-                    "path": f"media/{entry.name}"
+                    "path": f"{ROUTE_PATH}/media/{entry.name}"
                 })
             elif entry.is_file() and entry.suffix.lower() in [".jpg", ".jpeg"]:
                 items.append({
                     "name": entry.name,
                     "type": "file",
                     "page_count": 1,
-                    "path": f"media/{entry.name}"
+                    "path": f"{ROUTE_PATH}/media/{entry.name}"
                 })
 
     return templates.TemplateResponse(
@@ -72,6 +88,13 @@ async def upload_file(file: UploadFile = File(...)):
             for idx, img in enumerate(images, start=1):
                 img_name = f"{base_name}_page_{idx}.jpg"
                 img.save(target_folder / img_name, "JPEG")
+        except PDFPageCountError:
+            if target_folder.exists():
+                shutil.rmtree(target_folder)
+            raise HTTPException(
+                status_code=400, 
+                detail="The uploaded PDF is password-protected or corrupted. Please upload an unprotected PDF."
+            )
         finally:
             if temp_pdf_path.exists():
                 temp_pdf_path.unlink()
