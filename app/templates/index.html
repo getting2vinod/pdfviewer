@@ -6,6 +6,10 @@
         <a class="navbar-link navbar-brand fw-bold" href="{{ ROUTE_PATH }}/">
             <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>Document Viewer Hub
         </a>
+        <div class="ms-auto text-white d-flex align-items-center gap-3">
+            <span id="user-greeting" class="fw-semibold">Hello...</span>
+            <a href="/xauth/logout" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
     </div>
 </nav>
 
@@ -76,4 +80,25 @@
         {% endfor %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        fetch('/xauth/user-profile')
+            .then(response => response.json())
+            .then(data => {
+                const greeting = document.getElementById('user-greeting');
+                if (data && data.username) {
+                    greeting.textContent = `Hello ${data.username.toUpperCase()}`;
+                } else {
+                    greeting.textContent = `Hello User`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching user profile:', error);
+                document.getElementById('user-greeting').textContent = `Hello User`;
+            });
+    });
+</script>
 {% endblock %}
