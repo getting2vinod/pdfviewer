@@ -1,0 +1,14 @@
+[project]
+name = "pdf-image-viewer"
+version = "0.1.0"
+description = "FastAPI Jinja2 PDF to Image Viewer Application"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.28.0",
+    "jinja2>=3.1.3",
+    "python-multipart>=0.0.9",
+    "pdf2image>=1.17.0",
+    "pillow>=10.2.0",
+]

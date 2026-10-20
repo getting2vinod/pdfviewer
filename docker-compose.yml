@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  pdf-app:
+    build: .
+    container_name: pdf_viewer_app
+    restart: always
+    environment:
+      - ROUTE_PATH=/pdf
+      - DATA_DIR=/app/data
+    volumes:
+      - pdf_data:/app/data
+    ports:
+      - "8000:8000"
+
+volumes:
+  pdf_data:

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    body {
+        overflow: hidden;
+    }
+    #fixed-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        z-index: 1030;
+    }
+    #content-container {
+        position: absolute;
+        top: 60px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        overflow-y: auto;
+        padding: 20px 0;
+    }
+    #blankout-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+        z-index: 9999;
+        color: white;
+    }
+    #blankout-overlay.active {
+        display: flex;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Blankout Screen Overlay -->
+<div id="blankout-overlay" class="flex-column justify-content-center align-items-center">
+    <h3>Screen timed out due to inactivity</h3>
+    <p>Move mouse, touch screen, or press any key to resume viewing.</p>
+</div>
+
+<!-- Fixed Header -->
+<div id="fixed-header" class="bg-dark text-white d-flex align-items-center justify-content-between px-4 shadow">
+    <a href="{{ ROUTE_PATH }}/" class="btn btn-outline-light btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Back
+    </a>
+    <h5 class="m-0 text-truncate mx-3 fw-bold">{{ title }}</h5>
+    <div style="width: 75px;"></div>
+</div>
+
+<!-- Scrollable Content Area -->
+<div id="content-container">
+    <div class="container d-flex flex-column align-items-center">
+        {% for img_path in images %}
+            <div class="card shadow mb-4 bg-white p-2">
+                <img src="{{ img_path }}" class="img-fluid rounded" alt="Page Image" loading="lazy">
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const itemKey = "scroll_pos_" + encodeURIComponent("{{ title }}");
+    const container = document.getElementById("content-container");
+    const overlay = document.getElementById("blankout-overlay");
+
+    // 1. Scroll Position Memory
+    window.addEventListener("DOMContentLoaded", () => {
+        const savedPos = localStorage.getItem(itemKey);
+        if (savedPos) {
+            container.scrollTop = parseInt(savedPos, 10);
+        }
+    });
+
+    let isScrolling;
+    container.addEventListener("scroll", () => {
+        window.clearTimeout(isScrolling);
+        isScrolling = setTimeout(() => {
+            localStorage.setItem(itemKey, container.scrollTop);
+        }, 100);
+    });
+
+    // 2. 10-Minute Inactivity Screen Blankout (600,000 ms)
+    const INACTIVITY_TIMEOUT = 10 * 60 * 1000;
+    let inactivityTimer;
+
+    function resetInactivityTimer() {
+        if (overlay.classList.contains("active")) {
+            overlay.classList.remove("active");
+        }
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            overlay.classList.add("active");
+        }, INACTIVITY_TIMEOUT);
+    }
+
+    // Attach Activity Listeners
+    ["mousemove", "keydown", "click", "touchstart", "scroll"].forEach(evt => {
+        window.addEventListener(evt, resetInactivityTimer, true);
+    });
+
+    // Initialize Timer
+    resetInactivityTimer();
+</script>
+{% endblock %}
