@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+from datetime import datetime
 from pathlib import Path
 from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -44,20 +45,29 @@ async def index(request: Request):
     items = []
     if DATA_DIR.exists():
         for entry in sorted(DATA_DIR.iterdir(), key=lambda e: e.stat().st_mtime, reverse=True):
+            if entry.name.startswith("."):
+                continue
+            upload_dt = datetime.fromtimestamp(entry.stat().st_mtime)
+            upload_date = upload_dt.strftime("%b %d, %Y")
+            upload_datetime = upload_dt.strftime("%b %d, %Y %I:%M %p")
             if entry.is_dir():
                 page_count = len(list(entry.glob("*.jpg")))
                 items.append({
                     "name": entry.name,
                     "type": "folder",
                     "page_count": page_count,
-                    "path": f"{ROUTE_PATH}/media/{entry.name}"
+                    "path": f"{ROUTE_PATH}/media/{entry.name}",
+                    "upload_date": upload_date,
+                    "upload_datetime": upload_datetime
                 })
             elif entry.is_file() and entry.suffix.lower() in [".jpg", ".jpeg"]:
                 items.append({
                     "name": entry.name,
                     "type": "file",
                     "page_count": 1,
-                    "path": f"{ROUTE_PATH}/media/{entry.name}"
+                    "path": f"{ROUTE_PATH}/media/{entry.name}",
+                    "upload_date": upload_date,
+                    "upload_datetime": upload_datetime
                 })
 
     return templates.TemplateResponse(

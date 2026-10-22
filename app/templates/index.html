@@ -49,13 +49,18 @@
                         <h6 class="card-title fw-bold mb-2 text-break" title="{{ item.name }}">
                             {{ item.name }}
                         </h6>
-                        <span class="badge bg-secondary mb-3">
-                            {% if item.type == 'folder' %}
-                                {{ item.page_count }} Page(s)
-                            {% else %}
-                                Image File
-                            {% endif %}
-                        </span>
+                        <div class="mb-2">
+                            <span class="badge bg-secondary">
+                                {% if item.type == 'folder' %}
+                                    {{ item.page_count }} Page(s)
+                                {% else %}
+                                    Image File
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="text-muted small mb-3" title="Uploaded on {{ item.upload_datetime }}">
+                            <i class="bi bi-calendar3 me-1"></i>Uploaded: {{ item.upload_date }}
+                        </div>
                     </div>
                     <div class="d-flex w-100 align-items-center gap-2 mt-2">
                         <a href="{{ ROUTE_PATH }}/preview/{{ item.name }}" class="btn btn-outline-primary btn-sm flex-fill rounded-pill">
